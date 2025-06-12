@@ -21,6 +21,7 @@ packaging==25.0
 pillow==11.2.1
 pydantic==2.11.5
 pydantic_core==2.33.2
+python-multipart==0.0.20
 PyYAML==6.0.2
 redis==6.2.0
 regex==2024.11.6

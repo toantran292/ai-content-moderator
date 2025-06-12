@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7
+    ports: [ "6379:6379" ]
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: example
+    ports: [ "5432:5432" ]
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniopass
+    ports: [ "9000:9000", "9001:9001" ]
+  content-api:
+    build:
+      context: ../
+      dockerfile: docker/api.Dockerfile
+    env_file: .env.dev
+    depends_on: [ redis, postgres ]
+    ports: [ "3000:3000" ]
+  worker-image:
+    build:
+      context: ../
+      dockerfile: docker/worker-image.Dockerfile
+    command: ["python", "-m", "app.queue"]
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on: [ redis ]
+    ports: [ "8001:8001" ]
