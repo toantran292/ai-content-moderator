@@ -6,7 +6,9 @@ services:
   postgres:
     image: postgres:15
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: content_moderator
     ports: [ "5432:5432" ]
   minio:
     image: minio/minio
@@ -19,7 +21,7 @@ services:
     build:
       context: ../
       dockerfile: docker/api.Dockerfile
-    env_file: .env.dev
+    env_file: ../.env.dev
     depends_on: [ redis, postgres ]
     ports: [ "3000:3000" ]
   worker-image:
@@ -27,7 +29,6 @@ services:
       context: ../
       dockerfile: docker/worker-image.Dockerfile
     command: ["python", "-m", "app.queue"]
-    environment:
-      REDIS_URL: redis://redis:6379
+    env_file: ../.env.dev
     depends_on: [ redis ]
     ports: [ "8001:8001" ]
